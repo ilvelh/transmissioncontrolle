@@ -1,10 +1,14 @@
 package ca.teyssedre.android.transmissioncontrol.model.item;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TransmissionElement {
+public class TransmissionElement implements Parcelable {
 
     private int id;
     private String name;
@@ -19,6 +23,28 @@ public class TransmissionElement {
 
     public TransmissionElement() {
     }
+
+    protected TransmissionElement(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        leechers = in.readInt();
+        seeders = in.readInt();
+        hashString = in.readString();
+        peersConnected = in.readInt();
+        totalSize = in.readDouble();
+    }
+
+    public static final Creator<TransmissionElement> CREATOR = new Creator<TransmissionElement>() {
+        @Override
+        public TransmissionElement createFromParcel(Parcel in) {
+            return new TransmissionElement(in);
+        }
+
+        @Override
+        public TransmissionElement[] newArray(int size) {
+            return new TransmissionElement[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -101,5 +127,21 @@ public class TransmissionElement {
 
     public void setTotalSize(double totalSize) {
         this.totalSize = totalSize;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeInt(leechers);
+        dest.writeInt(seeders);
+        dest.writeString(hashString);
+        dest.writeInt(peersConnected);
+        dest.writeDouble(totalSize);
     }
 }

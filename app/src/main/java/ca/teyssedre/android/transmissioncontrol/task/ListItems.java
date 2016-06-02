@@ -92,12 +92,27 @@ public class ListItems extends AsyncTask<String, String, TransmissionRequest<Lis
 
         } catch (IOException e) {
             e.printStackTrace();
+            cancel(true);
         }
         return parsed;
     }
 
     @Override
-    protected void onPostExecute(TransmissionRequest<ListArgsResponse> listArgsResponseTransmissionRequest) {
+    protected void onPostExecute(TransmissionRequest<ListArgsResponse> result) {
+        if (callback != null) {
+            if (result != null) {
+                callback.onCompleted(result);
+            }else{
+                callback.onError();
+            }
+        }
+    }
 
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+//        if (callback != null) {
+//            callback.onCancelled();
+//        }
     }
 }

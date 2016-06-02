@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TransmissionControl.iml" filepath="$PROJECT_DIR$/TransmissionControl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TransmissionControlle.iml" filepath="$PROJECT_DIR$/TransmissionControlle.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

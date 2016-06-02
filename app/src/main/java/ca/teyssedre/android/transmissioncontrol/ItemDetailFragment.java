@@ -14,6 +14,7 @@ import ca.teyssedre.android.transmissioncontrol.model.item.TransmissionElement;
 public class ItemDetailFragment extends Fragment {
 
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_ITEM = "item";
     private TransmissionElement mItem;
 
     /**
@@ -46,7 +47,7 @@ public class ItemDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-//            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.getStatus().toString());
+            ((TextView) rootView.findViewById(R.id.item_name)).setText(mItem.getStatus().toString());
         }
 
         return rootView;

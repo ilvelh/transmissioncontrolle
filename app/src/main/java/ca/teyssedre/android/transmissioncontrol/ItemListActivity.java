@@ -1,5 +1,7 @@
 package ca.teyssedre.android.transmissioncontrol;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +18,8 @@ import ca.teyssedre.android.transmissioncontrol.model.request.TransmissionReques
 import ca.teyssedre.android.transmissioncontrol.model.response.ListArgsResponse;
 import ca.teyssedre.android.transmissioncontrol.task.ListItems;
 import ca.teyssedre.android.transmissioncontrol.task.OnTaskComplete;
+import ca.teyssedre.android.transmissioncontrol.view.OnTorrentClickListener;
+import ca.teyssedre.android.transmissioncontrol.view.TorrentListAdapter;
 
 /**
  * An activity representing a list of Items. This activity
@@ -25,7 +29,7 @@ import ca.teyssedre.android.transmissioncontrol.task.OnTaskComplete;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ItemListActivity extends AppCompatActivity {
+public class ItemListActivity extends AppCompatActivity implements OnTorrentClickListener {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -33,10 +37,15 @@ public class ItemListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     private OnTaskComplete<TransmissionRequest<ListArgsResponse>> onListResponse;
+    private FloatingActionButton fab;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // TODO: Validate that a profile exist
+
         setContentView(R.layout.activity_item_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -44,8 +53,8 @@ public class ItemListActivity extends AppCompatActivity {
         assert toolbar != null;
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        final View recyclerView = findViewById(R.id.item_list);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        recyclerView = (RecyclerView) findViewById(R.id.item_list);
 
         assert recyclerView != null;
         assert fab != null;
@@ -58,7 +67,10 @@ public class ItemListActivity extends AppCompatActivity {
 
             @Override
             public void onError() {
-
+                Snackbar.make(fab, "An error occurred :(", Snackbar.LENGTH_LONG)
+                        // TODO: add detail error popup
+                        //.setAction("See Details", null)
+                        .show();
             }
         };
 
@@ -77,75 +89,30 @@ public class ItemListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull List<TransmissionElement> data, RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new TorrentListAdapter(data, this));
     }
 
-//    public class SimpleItemRecyclerViewAdapter
-//            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
-//
-//        private final List<DummyContent.DummyItem> mValues;
-//
-//        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-//            mValues = items;
-//        }
-//
-//        @Override
-//        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            View view = LayoutInflater.from(parent.getContext())
-//                    .inflate(R.layout.item_list_content, parent, false);
-//            return new ViewHolder(view);
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(final ViewHolder holder, int position) {
-//            holder.mItem = mValues.get(position);
-//            holder.mIdView.setText(mValues.get(position).id);
-//            holder.mContentView.setText(mValues.get(position).content);
-//
-//            holder.mView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (mTwoPane) {
-//                        Bundle arguments = new Bundle();
-//                        arguments.putString(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-//                        ItemDetailFragment fragment = new ItemDetailFragment();
-//                        fragment.setArguments(arguments);
-//                        getSupportFragmentManager().beginTransaction()
-//                                .replace(R.id.item_detail_container, fragment)
-//                                .commit();
-//                    } else {
-//                        Context context = v.getContext();
-//                        Intent intent = new Intent(context, ItemDetailActivity.class);
-//                        intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-//
-//                        context.startActivity(intent);
-//                    }
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return mValues.size();
-//        }
-//
-//        public class ViewHolder extends RecyclerView.ViewHolder {
-//            public final View mView;
-//            public final TextView mIdView;
-//            public final TextView mContentView;
-//            public DummyContent.DummyItem mItem;
-//
-//            public ViewHolder(View view) {
-//                super(view);
-//                mView = view;
-//                mIdView = (TextView) view.findViewById(R.id.id);
-//                mContentView = (TextView) view.findViewById(R.id.content);
-//            }
-//
-//            @Override
-//            public String toString() {
-//                return super.toString() + " '" + mContentView.getText() + "'";
-//            }
-//        }
-//    }
+    @Override
+    public void onTorrentClick(View view, TransmissionElement element) {
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(ItemDetailFragment.ARG_ITEM_ID, element);
+            ItemDetailFragment fragment = new ItemDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+        } else {
+            Context context = view.getContext();
+            Intent intent = new Intent(context, ItemDetailActivity.class);
+            intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, element);
+
+            context.startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onTorrentLongClick(View view, TransmissionElement element) {
+
+    }
 }
