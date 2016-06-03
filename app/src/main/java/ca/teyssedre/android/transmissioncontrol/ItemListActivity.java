@@ -20,21 +20,10 @@ import ca.teyssedre.android.transmissioncontrol.task.ListItems;
 import ca.teyssedre.android.transmissioncontrol.task.OnTaskComplete;
 import ca.teyssedre.android.transmissioncontrol.view.OnTorrentClickListener;
 import ca.teyssedre.android.transmissioncontrol.view.TorrentListAdapter;
+import ca.teyssedre.android.transmissioncontrol.view.fragment.ItemDetailFragment;
 
-/**
- * An activity representing a list of Items. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link ItemDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 public class ItemListActivity extends AppCompatActivity implements OnTorrentClickListener {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
     private boolean mTwoPane;
     private OnTaskComplete<TransmissionRequest<ListArgsResponse>> onListResponse;
     private FloatingActionButton fab;
@@ -44,14 +33,17 @@ public class ItemListActivity extends AppCompatActivity implements OnTorrentClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: Validate that a profile exist
-
         setContentView(R.layout.activity_item_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert toolbar != null;
         toolbar.setTitle(getTitle());
+        if (findViewById(R.id.item_detail_container) != null) {
+            mTwoPane = true;
+        }
+        ValidateProfile();
+
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         recyclerView = (RecyclerView) findViewById(R.id.item_list);
@@ -83,9 +75,13 @@ public class ItemListActivity extends AppCompatActivity implements OnTorrentClic
                 task.execute();
             }
         });
-        if (findViewById(R.id.item_detail_container) != null) {
-            mTwoPane = true;
-        }
+    }
+
+    private void ValidateProfile() {
+        // TODO: Validate that a profile exist
+        Context context = this;
+        Intent edit = new Intent(context, ProfileEditActivity.class);
+        context.startActivity(edit);
     }
 
     private void setupRecyclerView(@NonNull List<TransmissionElement> data, RecyclerView recyclerView) {

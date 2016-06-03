@@ -27,6 +27,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.teyssedre.android.transmissioncontrol.ItemListActivity" />
         </activity>
+        <activity
+            android:name=".ProfileEditActivity"
+            android:parentActivityName=".ItemListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.teyssedre.android.transmissioncontrol.ItemListActivity" />
+        </activity>
     </application>
 
 </manifest>

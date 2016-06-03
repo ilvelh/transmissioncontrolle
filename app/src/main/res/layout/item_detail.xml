@@ -12,6 +12,6 @@
         android:singleLine="true"
         android:textIsSelectable="false"
         android:ellipsize="end"
-        tools:context="ca.teyssedre.android.transmissioncontrol.ItemDetailFragment" />
+        tools:context=".view.fragment.ItemDetailFragment" />
 
 </RelativeLayout>

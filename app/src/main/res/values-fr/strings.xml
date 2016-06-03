@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Transmission Control</string>
+    <string name="domain_name_hint">Nom de domain ou IP</string>
+    <string name="enable_auth">Authentification</string>
+    <string name="enable_ssl">HTTPS</string>
+    <string name="password_hint">Mot de passe</string>
+    <string name="profile_name_hint">Nom du profile</string>
+    <string name="username_hint">Nom d\'utilisateur</string>
+    <string name="title_item_detail">Détails de l\'item</string>
+</resources>

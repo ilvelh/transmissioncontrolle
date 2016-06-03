@@ -1,4 +1,4 @@
-package ca.teyssedre.android.transmissioncontrol;
+package ca.teyssedre.android.transmissioncontrol.view.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ca.teyssedre.android.transmissioncontrol.R;
 import ca.teyssedre.android.transmissioncontrol.model.item.TransmissionElement;
 
 public class ItemDetailFragment extends Fragment {

@@ -1,4 +1,11 @@
 <resources>
-    <string name="app_name">Transmission Control</string>
+    <string name="app_name" translatable="false">Transmission Control</string>
     <string name="title_item_detail">Item Detail</string>
+    <string name="profile_name_hint">Profile name</string>
+    <string name="domain_name_hint">Domain name or IP</string>
+    <string name="enable_ssl">HTTPS</string>
+    <string name="enable_auth">Authentication</string>
+    <string name="password_hint">Password</string>
+    <string name="username_hint">Username</string>
+    <string name="save_btn_text">Save</string>
 </resources>
