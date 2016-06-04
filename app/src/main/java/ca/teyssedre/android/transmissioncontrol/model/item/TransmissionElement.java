@@ -3,13 +3,25 @@ package ca.teyssedre.android.transmissioncontrol.model.item;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class TransmissionElement implements Parcelable {
 
+    public static final Creator<TransmissionElement> CREATOR = new Creator<TransmissionElement>() {
+        @Override
+        public TransmissionElement createFromParcel(Parcel in) {
+            return new TransmissionElement(in);
+        }
+
+        @Override
+        public TransmissionElement[] newArray(int size) {
+            return new TransmissionElement[size];
+        }
+    };
     private int id;
     private String name;
     private Date addedDate;
@@ -29,22 +41,11 @@ public class TransmissionElement implements Parcelable {
         name = in.readString();
         leechers = in.readInt();
         seeders = in.readInt();
+        status = TransmissionElementStatus.parse(in.readInt());
         hashString = in.readString();
         peersConnected = in.readInt();
         totalSize = in.readDouble();
     }
-
-    public static final Creator<TransmissionElement> CREATOR = new Creator<TransmissionElement>() {
-        @Override
-        public TransmissionElement createFromParcel(Parcel in) {
-            return new TransmissionElement(in);
-        }
-
-        @Override
-        public TransmissionElement[] newArray(int size) {
-            return new TransmissionElement[size];
-        }
-    };
 
     public int getId() {
         return id;
@@ -90,6 +91,7 @@ public class TransmissionElement implements Parcelable {
         return status;
     }
 
+    @JsonDeserialize(using = ElementStatusDeserializer.class)
     public void setStatus(TransmissionElementStatus status) {
         this.status = status;
     }
@@ -140,6 +142,7 @@ public class TransmissionElement implements Parcelable {
         dest.writeString(name);
         dest.writeInt(leechers);
         dest.writeInt(seeders);
+        dest.writeInt(status.getCode());
         dest.writeString(hashString);
         dest.writeInt(peersConnected);
         dest.writeDouble(totalSize);
