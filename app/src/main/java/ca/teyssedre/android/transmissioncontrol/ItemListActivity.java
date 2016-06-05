@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.util.List;
 
+import ca.teyssedre.android.transmissioncontrol.model.TransmissionProfile;
 import ca.teyssedre.android.transmissioncontrol.model.item.TransmissionElement;
 import ca.teyssedre.android.transmissioncontrol.model.request.TransmissionRequest;
 import ca.teyssedre.android.transmissioncontrol.model.response.ListArgsResponse;
@@ -28,11 +29,13 @@ public class ItemListActivity extends AppCompatActivity implements OnTorrentClic
     private OnTaskComplete<TransmissionRequest<ListArgsResponse>> onListResponse;
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
+    private TransmissionApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        application = (TransmissionApplication) getApplication();
         setContentView(R.layout.activity_item_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,10 +69,12 @@ public class ItemListActivity extends AppCompatActivity implements OnTorrentClic
             }
         };
 
+        application.setListResultListener(onListResponse);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ListItems task = new ListItems(onListResponse);
+                ListItems task = new ListItems(application.getProfile(), onListResponse);
                 Snackbar.make(view, "Fetching data ...", Snackbar.LENGTH_LONG)
                         .show();
                 task.execute();
@@ -79,9 +84,14 @@ public class ItemListActivity extends AppCompatActivity implements OnTorrentClic
 
     private void ValidateProfile() {
         // TODO: Validate that a profile exist
-        Context context = this;
-        Intent edit = new Intent(context, ProfileEditActivity.class);
-        context.startActivity(edit);
+        if (application.getProfile() == null) {
+
+            TransmissionProfile profile = new TransmissionProfile("dserverd.no-ip.info", "TorDLAccess", "p0l1c3$", true);
+            application.setProfile(profile);
+//            Context context = this;
+//            Intent edit = new Intent(context, ProfileEditActivity.class);
+//            context.startActivity(edit);
+        }
     }
 
     private void setupRecyclerView(@NonNull List<TransmissionElement> data, RecyclerView recyclerView) {

@@ -8,12 +8,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 import ca.teyssedre.android.transmissioncontrol.model.TransmissionProfile;
 import ca.teyssedre.restclient.HttpContentType;
 import ca.teyssedre.restclient.HttpRequest;
 import ca.teyssedre.restclient.HttpRequestType;
+import ca.teyssedre.restclient.NoSSLValidation;
 
 public class TransmissionRequest<T extends JsonArguments> {
 
@@ -41,6 +44,16 @@ public class TransmissionRequest<T extends JsonArguments> {
         this.request.addBasic(profile.getUsername() + ":" + profile.getPassword());
         this.request.setContentType(HttpContentType.APPLICATION_JSON);
         this.request.addData(this.toString());
+        if (profile.getSessionId() != null) {
+            this.request.addHeader("X-Transmission-Session-Id", profile.getSessionId());
+        }
+        if (profile.isIgnoreSSL()) {
+            try {
+                this.request.setSslFactory(new NoSSLValidation());
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

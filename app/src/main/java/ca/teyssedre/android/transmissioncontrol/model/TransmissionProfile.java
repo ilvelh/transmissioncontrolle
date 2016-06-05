@@ -26,6 +26,7 @@ public class TransmissionProfile implements Parcelable {
     private boolean ssl;
     private boolean ignoreSSL;
     private boolean authentication;
+    private String sessionId;
 
     public TransmissionProfile(String profileName, String serverName, String path, String username,
                                String password, int port, boolean ssl, boolean ignoreSSL) {
@@ -46,6 +47,7 @@ public class TransmissionProfile implements Parcelable {
         this.password = password;
         this.port = 443;
         this.ssl = ssl;
+        this.ignoreSSL = true;
     }
 
     protected TransmissionProfile(Parcel in) {
@@ -55,6 +57,7 @@ public class TransmissionProfile implements Parcelable {
         username = in.readString();
         password = in.readString();
         port = in.readInt();
+        sessionId = in.readString();
         ssl = in.readByte() != 0;
         ignoreSSL = in.readByte() != 0;
         authentication = in.readByte() != 0;
@@ -107,6 +110,14 @@ public class TransmissionProfile implements Parcelable {
         return authentication;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -120,6 +131,7 @@ public class TransmissionProfile implements Parcelable {
         parcel.writeString(username);
         parcel.writeString(password);
         parcel.writeInt(port);
+        parcel.writeString(sessionId);
         parcel.writeByte((byte) (ssl ? 1 : 0));
         parcel.writeByte((byte) (ignoreSSL ? 1 : 0));
         parcel.writeByte((byte) (authentication ? 1 : 0));

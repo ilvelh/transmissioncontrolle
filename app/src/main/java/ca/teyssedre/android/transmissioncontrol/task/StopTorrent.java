@@ -1,6 +1,5 @@
 package ca.teyssedre.android.transmissioncontrol.task;
 
-
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -10,29 +9,29 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 
 import ca.teyssedre.android.transmissioncontrol.model.TransmissionProfile;
+import ca.teyssedre.android.transmissioncontrol.model.request.IdsArgRequest;
 import ca.teyssedre.android.transmissioncontrol.model.request.ListArgRequest;
 import ca.teyssedre.android.transmissioncontrol.model.request.TransmissionRequest;
 import ca.teyssedre.android.transmissioncontrol.model.response.ListArgsResponse;
 import ca.teyssedre.restclient.HttpClient;
 import ca.teyssedre.restclient.HttpRequest;
 import ca.teyssedre.restclient.HttpResponse;
-import ca.teyssedre.restclient.NoSSLValidation;
 
-public class ListItems extends AsyncTask<String, String, TransmissionRequest<ListArgsResponse>> {
+public class StopTorrent extends AsyncTask<String, String, TransmissionRequest<ListArgsResponse>> {
 
-    private static final String TAG = "ListItems";
-    HttpClient client;
-    TransmissionProfile profile;
+    private static final String TAG = "StartTorrent";
+    private final HttpClient client;
+    private final TransmissionProfile profile;
     OnTaskComplete<TransmissionRequest<ListArgsResponse>> callback;
 
-    public ListItems(TransmissionProfile profile, OnTaskComplete<TransmissionRequest<ListArgsResponse>> callback) {
+    public StopTorrent(TransmissionProfile profile, OnTaskComplete<TransmissionRequest<ListArgsResponse>> callback) {
+
         this.callback = callback;
 
-        this.client = new HttpClient();
+        client = new HttpClient();
+
         this.profile = profile;
 
         if (this.profile.isIgnoreSSL()) {
@@ -43,20 +42,28 @@ public class ListItems extends AsyncTask<String, String, TransmissionRequest<Lis
     @Override
     protected TransmissionRequest<ListArgsResponse> doInBackground(String... strings) {
 
-        TransmissionRequest<ListArgRequest> torrents = new TransmissionRequest<>("torrent-get", new ListArgRequest());
+        TransmissionRequest<IdsArgRequest> set = new TransmissionRequest<>("torrent-stop", new IdsArgRequest(strings));
+        TransmissionRequest<ListArgRequest> get = new TransmissionRequest<>("torrent-get", new ListArgRequest(strings));
 
-        torrents.applyProfile(profile);
+        set.applyProfile(profile);
+        executeRequest(set.getRequest());
 
-        HttpRequest request = torrents.getRequest();
-        try {
-            request.setSslFactory(new NoSSLValidation());
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            e.printStackTrace();
-        }
-        return executeRequest(request);
+        get.applyProfile(profile);
+        executeRequest(get.getRequest());
+
+        return parseAnswer(get.getRequest().getResponse());
     }
 
-    private TransmissionRequest<ListArgsResponse> executeRequest(HttpRequest request) {
+    @Override
+    protected void onPostExecute(TransmissionRequest<ListArgsResponse> result) {
+        if (result != null) {
+            callback.onCompleted(result);
+        } else {
+            callback.onError();
+        }
+    }
+
+    private void executeRequest(HttpRequest request) {
 
         HttpResponse response = client.execute(request);
 
@@ -64,25 +71,28 @@ public class ListItems extends AsyncTask<String, String, TransmissionRequest<Lis
 
         switch (statusCode) {
             case 200:
-                return parseAnswer(response);
+                Log.d(TAG, "StartTorrent success");
             case 409:
                 Log.d(TAG, "Getting session id");
                 String headerField = request.getConnection().getHeaderField("X-Transmission-Session-Id");
-                if(headerField == null || headerField.length() == 0){
-                    return null;
+                if (headerField == null || headerField.length() == 0) {
+                    //TODO: error no data;
+                    return;
                 }
                 profile.setSessionId(headerField);
                 request.addHeader("X-Transmission-Session-Id", headerField);
-                return executeRequest(request);
+                executeRequest(request);
             default:
-                Log.d(TAG, "Request status:" + statusCode + " for " + request.getUrl());
-                return null;
+                Log.e(TAG, "Request status:" + statusCode + " for " + request.getUrl());
         }
 
     }
 
     private TransmissionRequest<ListArgsResponse> parseAnswer(HttpResponse response) {
         String data = response.getStringResponse();
+        if (data == null) {
+            return null;
+        }
         Log.d(TAG, "answer " + data);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -96,27 +106,7 @@ public class ListItems extends AsyncTask<String, String, TransmissionRequest<Lis
 
         } catch (IOException e) {
             e.printStackTrace();
-            cancel(true);
         }
         return parsed;
-    }
-
-    @Override
-    protected void onPostExecute(TransmissionRequest<ListArgsResponse> result) {
-        if (callback != null) {
-            if (result != null) {
-                callback.onCompleted(result);
-            } else {
-                callback.onError();
-            }
-        }
-    }
-
-    @Override
-    protected void onCancelled() {
-        super.onCancelled();
-//        if (callback != null) {
-//            callback.onCancelled();
-//        }
     }
 }
