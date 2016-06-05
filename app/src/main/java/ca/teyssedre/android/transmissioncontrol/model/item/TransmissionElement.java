@@ -32,6 +32,7 @@ public class TransmissionElement implements Parcelable {
     private int peersConnected;
     private List<TransmissionElementFile> files;
     private double totalSize;
+    private double percentDone;
 
     public TransmissionElement() {
     }
@@ -45,6 +46,7 @@ public class TransmissionElement implements Parcelable {
         hashString = in.readString();
         peersConnected = in.readInt();
         totalSize = in.readDouble();
+        percentDone = in.readDouble();
     }
 
     public int getId() {
@@ -131,6 +133,14 @@ public class TransmissionElement implements Parcelable {
         this.totalSize = totalSize;
     }
 
+    public double getPercentDone() {
+        return percentDone;
+    }
+
+    public void setPercentDone(double percentDone) {
+        this.percentDone = percentDone;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -146,5 +156,6 @@ public class TransmissionElement implements Parcelable {
         dest.writeString(hashString);
         dest.writeInt(peersConnected);
         dest.writeDouble(totalSize);
+        dest.writeDouble(percentDone);
     }
 }

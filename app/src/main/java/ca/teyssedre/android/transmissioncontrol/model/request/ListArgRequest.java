@@ -11,7 +11,7 @@ public class ListArgRequest extends JsonArguments {
     public JSONObject toJson() {
         JSONObject json = super.toJson();
         try {
-            json = new JSONObject("{fields:[id, eta, name, addedDate, leechers, seeders, status, hashString, peersConnected, files, totalSize ]}");
+            json = new JSONObject("{fields:[id, eta, name, addedDate, percentDone, leechers, seeders, status, hashString, peersConnected, files, totalSize ]}");
         } catch (JSONException e) {
             e.printStackTrace();
         }
