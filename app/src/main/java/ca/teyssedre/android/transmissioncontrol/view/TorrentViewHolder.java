@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,7 +23,9 @@ public class TorrentViewHolder extends RecyclerView.ViewHolder implements View.O
     private final TransmissionApplication application;
     private TextView name;
     private ImageView icon;
+    private LinearLayout downloadWrapper;
     private TextView download;
+    private LinearLayout uploadWrapper;
     private TextView upload;
     private ProgressBar progressBar;
     private TransmissionElement element;
@@ -32,7 +35,9 @@ public class TorrentViewHolder extends RecyclerView.ViewHolder implements View.O
         application = (TransmissionApplication) itemView.getContext().getApplicationContext();
         this.clickListener = clickListener;
         name = (TextView) itemView.findViewById(R.id.item_name);
+        downloadWrapper = (LinearLayout) itemView.findViewById(R.id.item_download_details);
         download = (TextView) itemView.findViewById(R.id.item_download_value);
+        uploadWrapper = (LinearLayout) itemView.findViewById(R.id.item_upload_details);
         upload = (TextView) itemView.findViewById(R.id.item_upload_value);
         progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
         icon = (ImageView) itemView.findViewById(R.id.item_icon_status);
@@ -48,19 +53,29 @@ public class TorrentViewHolder extends RecyclerView.ViewHolder implements View.O
         name.setText(this.element.getName());
         switch (this.element.getStatus()) {
             case STATUS_STOPPED:
-                setupStatusIcon(R.drawable.ic_play_circle_filled_black_48dp);
+                setupStatusIcon(R.drawable.ic_play_circle_filled_black);
+                hideSpeed();
                 break;
             case STATUS_CHECK:
             case STATUS_CHECK_WAIT:
             case STATUS_DOWNLOAD:
-                setupStatusIcon(R.drawable.ic_pause_circle_filled_black_48dp);
-                break;
             case STATUS_SEED:
-                setupStatusIcon(R.drawable.ic_file_upload_black_48dp);
+                setupStatusIcon(R.drawable.ic_pause_circle_filled_black);
+                showSpeed();
                 break;
         }
         progressBar.setMax(100);
         progressBar.setProgress((int) (this.element.getPercentDone() * 100));
+    }
+
+    private void hideSpeed() {
+        downloadWrapper.setVisibility(View.INVISIBLE);
+        uploadWrapper.setVisibility(View.INVISIBLE);
+    }
+
+    private void showSpeed() {
+        downloadWrapper.setVisibility(View.VISIBLE);
+        uploadWrapper.setVisibility(View.VISIBLE);
     }
 
     @Override

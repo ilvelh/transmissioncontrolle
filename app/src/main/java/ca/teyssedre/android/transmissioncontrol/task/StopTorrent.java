@@ -56,10 +56,12 @@ public class StopTorrent extends AsyncTask<String, String, TransmissionRequest<L
 
     @Override
     protected void onPostExecute(TransmissionRequest<ListArgsResponse> result) {
-        if (result != null) {
-            callback.onCompleted(result);
-        } else {
-            callback.onError();
+        if (callback != null) {
+            if (result != null) {
+                callback.onCompleted(result);
+            } else {
+                callback.onError();
+            }
         }
     }
 

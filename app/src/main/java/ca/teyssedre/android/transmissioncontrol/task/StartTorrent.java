@@ -56,10 +56,12 @@ public class StartTorrent extends AsyncTask<String, String, TransmissionRequest<
 
     @Override
     protected void onPostExecute(TransmissionRequest<ListArgsResponse> result) {
-        if (result != null) {
-            callback.onCompleted(result);
-        } else {
-            callback.onError();
+        if (callback != null) {
+            if (result != null) {
+                callback.onCompleted(result);
+            } else {
+                callback.onError();
+            }
         }
     }
 
